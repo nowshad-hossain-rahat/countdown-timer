@@ -1,0 +1,194 @@
+#nhr-certificate-validator-form {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 25px;
+	border: 1px solid #333;
+	border-radius: 5px;
+	width: 100%;
+	margin: 10px auto;
+	background: transparent;
+	font-family: 'Aldrich';
+}
+
+#nhr-certificate-validator-form .heading {
+	width: 45%;
+}
+
+#nhr-certificate-validator-form .heading h1 {
+	font-size: 32px;
+	margin: auto;
+	text-align: center;
+	width: 100%;
+	font-weight: bold;
+	color: white;
+}
+
+#nhr-certificate-validator-form form {
+	width: 45%;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+#nhr-certificate-validator-form form input,
+#nhr-certificate-validator-form form button {
+	width: 100%;
+	background: transparent;
+	color: #333;
+	font-size: 15px;
+	border-radius: 5px;
+	margin: 0 0 10px 0;
+	border-color: #333;
+	padding: 15px;
+}
+
+#nhr-certificate-validator-form form button {
+	border: none;
+	color: #213567;
+	box-shadow: inset 0 0 0 2px #213567;
+	position: relative;
+	transition: 0.2s;
+	font-weight: bold;
+	font-size: 18px;
+	cursor: pointer;
+	text-transform: capitalize;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#nhr-certificate-validator-form form button i {
+	margin: 0 0 0 -25px;
+	transition: 0.3s;
+	opacity: 0;
+	font-weight: bold;
+	font-size: 30px;
+}
+
+#nhr-certificate-validator-form form button:hover i {
+	opacity: 1;
+	margin-left: 0;
+}
+
+#nhr-certificate-validator-form form button:hover {
+	background: rgba(255, 255, 255, 0.2);
+	box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0);
+}
+
+#nhr-cv-results-table-container {
+	margin: 10px auto;
+	overflow-x: scroll;
+	padding: 0;
+	width: 100%;
+}
+
+#nhr-cv-results-table {
+	border: 1px solid #888;
+	border-collapse: collapse;
+	border-radius: 5px;
+	overflow-x: scroll;
+	width: 100%;
+  padding: 0;
+  margin: 10px auto;
+	border-radius: 10px;
+}
+
+#nhr-cv-results-table th {
+	font-size: 15px;
+	padding: 10px 15px;
+	text-transform: uppercase;
+	color: #fff;
+	background: #213567;
+	width: auto;
+	white-space: nowrap;
+	text-align: center;
+}
+
+#nhr-cv-results-table td,
+#nhr-cv-results-table th {
+  border: 1px solid #888;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+#nhr-cv-results-table tr {
+	margin: 0;
+	padding: 0;
+}
+
+#nhr-cv-results-table tr td {
+	padding: 10px 15px;
+	line-height: 25px;
+	font-size: 15px;
+	width: auto;
+	color: #333;
+	white-space: nowrap;
+}
+
+#nhr-cv-results-table tr td a {
+	font-weight: bold;
+	color: #888;
+}
+
+#nhr-cv-results-table tr td.notice {
+	text-align: center;
+}
+
+.succeed-msg,
+.warning-msg {
+    padding: 0 10px 15px 10px;
+    color: #800000;
+    border-radius: 5px;
+    margin: 5px 0 5px 0;
+    font-size: 15px;
+    display: inline-block;
+    font-weight: bold;
+}
+
+.succeed-msg {
+    background-color: forestgreen;
+}
+
+
+
+@media screen and (max-width: 650px){
+	
+	#nhr-certificate-validator-form form .input-item {
+		flex-direction: column;
+		justify-content: flex-start;
+		align-items: center;
+		flex-flow: wrap;
+	}
+	
+	#nhr-certificate-validator-form form .input-item label {
+		width: 100%;
+	}
+	
+	#nhr-certificate-validator-form form .input-item input {
+		width: 100%;
+	}
+	
+}
+
+
+
+@media screen and (max-width: 350px){
+	
+	#nhr-certificate-validator-form {
+		flex-direction: column;
+		justify-content: flex-start;
+		align-items: center;
+	}
+
+	#nhr-certificate-validator-form .heading {
+		width: 100%;
+		padding: 50px 0;
+	}
+
+	#nhr-certificate-validator-form form {
+		width: 100%;
+	}
+	
+}
+                                                                                                            

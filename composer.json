@@ -1,0 +1,20 @@
+{
+    "name": "nowshad/countdown-timer",
+    "description": "This is a custom wordpress plugin to create custom countdown timers.",
+    "version": "0.1.0",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Nhrdev\\CountdownTimer\\": "classes/"
+        }
+    },
+    "authors": [
+        {
+            "name": "nowshad-hossain-rahat",
+            "email": "nowshad.hossain.rahat@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
