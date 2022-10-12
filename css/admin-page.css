@@ -5,14 +5,6 @@ form {
     align-items: flex-start;
 }
 
-form .inline-date-inputs input {
-    width: 100px;
-}
-
-.nrr-form small {
-    color: #cc2929;
-}
-
 .succeed-msg,
 .warning-msg {
     background: firebrick;
@@ -35,17 +27,30 @@ form .inline-date-inputs input {
     transition: 0.3s;
 }
 
-input {
-    border:none;
+form#nhr-add-new-timer-form label {
+    margin-bottom: 5px !important;
+}
+
+form input,
+form select {
     outline: none;
     padding: 10px 15px;
     border-radius: 5px;
     font-size: 15px;
-    margin: 10px 0;
+    margin: 5px 0 5px 0;
     color: #333;
     background-color: rgba(0, 0, 0, 0.1);
     font-weight: bold;
     transition: 0.3s;
+}
+
+form select {
+    margin-bottom: 10px;
+}
+
+form input[type="color"] {
+    width: 100px;
+    height: 30px;
 }
 
 .btn {

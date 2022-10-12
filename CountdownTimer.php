@@ -44,7 +44,9 @@ final class CountdownTimer
     add_action('wp_enqueue_scripts', [$this, 'addFontelloCss']);
 
     add_action('init', function () {
-      add_shortcode('pd-add-plant-popup', [$this, 'showCountdownTimer']);
+      $this->createShortcodes([
+        'nhr-countdown-timer' => 'showCountdownTimer'
+      ]);
     });
   }
 
@@ -59,18 +61,34 @@ final class CountdownTimer
 
   function showCountdownTimer( $attr )
   {
+    if (isset($attr["name"]))
+    {
+      $timer_name = trim($attr["name"]);
 
+      ob_start();
+        $timer = DbHandler::getOneTimerByName($timer_name);
+        echo "<style>";
+          require_once plugin_dir_path(__FILE__) . "css/countdown-timer.css";
+        echo "</style>";
+        require_once plugin_dir_path(__FILE__) . "views/show-countdown-timer.php";
+      $html = ob_get_clean();
+
+      return $html;
+    } else {
+      return "";
+    }
   }
 
+  function createShortcodes(array $shortcodesAndCallbacks)
+  {
+    foreach($shortcodesAndCallbacks as $shortcode => $callback)
+    {
+      add_shortcode($shortcode, [$this, $callback]);
+    }
+  }
 
 }
 
 if (class_exists('CountdownTimer')) {
-
   new CountdownTimer();
 }
-
-
-
-
-?>

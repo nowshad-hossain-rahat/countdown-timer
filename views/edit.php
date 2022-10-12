@@ -1,131 +1,131 @@
 <style>
-    <?php require_once plugin_dir_path( dirname( __FILE__ ) ).'css/admin-page.css'; ?>
+    <?php require_once plugin_dir_path(dirname(__FILE__)) . 'css/admin-page.css'; ?>
 </style>
 
 <?php
 
-    use Nowshad\NhrIacaabCertificateValidator\Database;
+use Nhrdev\CountdownTimer\DbHandler;
 
-    $id = intval($_GET['post_id']);
+// to show a cancellable admin notice
+function notify(string $msg, string $type, bool $is_dismissible = true)
+{
+    $dismissible = ($is_dismissible == true) ? "is-dismissible" : '';
+    $notice_board = "<div style='margin-left: 2px;margin-right: 10px;' class='notice notice-$type $dismissible'>" .
+        "<p>$msg</p>" .
+        "</div>";
+    echo $notice_board;
+}
 
-    // to show a cancellable admin notice
-    function notify(string $msg, string $type, bool $is_dismissible=true){
-        $dismissible = ($is_dismissible==true) ? "is-dismissible":''; 
-        $notice_board = "<div style='margin-left: 2px;margin-right: 10px;' class='notice notice-$type $dismissible'>".
-                            "<p>$msg</p>".
-                        "</div>";
-        echo $notice_board;
-    }
 
+if (isset($_POST['update_timer'])) {
 
-    if(isset($_POST['update_certificate'])){
+    $timer_name = trim($_POST['timer_name']);
+    $countdown_till = trim($_POST['countdown_till']);
+    $bg_type = trim($_POST['bg_type']);
+    $bg_image = trim($_POST['bg_image']);
+    $bg_color = trim($_POST['bg_color']);
 
-        $organization = trim($_POST['organization_name']);
-        $accreditation_number = trim($_POST['accreditation_number']);
-        $program = trim($_POST['program']);
-        $country = trim($_POST['country']);
-        $comment = trim($_POST['comment']);
+    if (
+        empty($timer_name) ||
+        empty($countdown_till) ||
+        empty($bg_type)
+    ) {
+        notify("Please fill all the fields!", "warning", true);
+    } else {
 
-        $issueYear = intval(trim($_POST['issue_year']));
-        $issueMonth = intval(trim($_POST['issue_month']));
-        $issueDay = intval(trim($_POST['issue_day']));
+        if ($bg_type === "image" && empty($bg_image)) {
+            notify("Background image is required!", "warning");
+        } else if ($bg_type === "color" && empty($bg_color)) {
+            notify("Background color is required!", "warning");
+        } else {
 
-        $expiryYear = intval(trim($_POST['expiry_year']));
-        $expiryMonth = intval(trim($_POST['expiry_month']));
-        $expiryDay = intval(trim($_POST['expiry_day']));
+            $response = DbHandler::updateTimer((int) $_GET['timer_id'], $timer_name, $countdown_till, $bg_type, $bg_image, $bg_color);
 
-        $issueDate = "$issueYear-$issueMonth-$issueDay";
-        $expiryDate = "$expiryYear-$expiryMonth-$expiryDay";
-        
-        if(
-            empty($organization) || 
-            empty($accreditation_number) || 
-            empty($program) || 
-            empty($country) || 
-            empty($issueYear) || 
-            empty($issueMonth) || 
-            empty($issueDay) || 
-            empty($expiryYear) || 
-            empty($expiryMonth) || 
-            empty($expiryDay)
-        ){
-            notify("Please fill all the fields!", "warning", true);
-        }else{
-            
-            $pdf = isset($_FILES['pdf']) ? $_FILES['pdf']:false;
-
-            $response = Database::update($id, $organization, $accreditation_number, $program, $country, $pdf, $issueDate, $expiryDate, $comment);
-
-            if($response == 'record-exists'){
-                notify("Record already exists!", 'warning', true);
-            }else if($response == 'success'){
-                notify("Certificate updated successfully!", "success", true);
-            }else{
-                echo $response;
+            if ($response == 'success') {
+                notify("Timer added successfully!", "success", true);
+            } else if ($response == 'exists') {
+                notify("Timer already exists!", 'warning', true);
+            } else {
                 notify("Something went wrong, please try again!", "warning", true);
             }
-
         }
-
     }
+}
 
 
-    // fetching the certificate by id
-    $certificate = Database::getOneCertificateByID($id);
-    
-    $issDate = explode('-', $certificate['ISSUE_DATE']);
-    $expDate = explode('-', $certificate['EXPIRY_DATE']);
-    
-    $issYear = $issDate[0];
-    $issMonth = $issDate[1];
-    $issDay = $issDate[2];
-
-    $expYear = $expDate[0];
-    $expMonth = $expDate[1];
-    $expDay = $expDate[2];
-
+$timer = DbHandler::getOneTimerByID((int) trim($_GET['timer_id']));
 
 ?>
 
-<h1>Update Certificate</h1>
+<h1>Update Timer (<?php echo $timer->timer_name ?>)</h1>
+<hr>
 
-<form method="post" enctype="multipart/form-data">
-    
-    <label>Organization Name :</label>
-    <input value="<?php echo $certificate['ORGANIZATION_NAME']; ?>" type="text" name="organization_name" placeholder="Organization name" required/>
-    
-    <label>Accreditation Number : </label>
-    <input value="<?php echo $certificate['ACCREDITATION_NUMBER']; ?>" type="text" name="accreditation_number" placeholder="Accreditation Number" required/>
-    
-    <label>Program : </label>
-    <input value="<?php echo $certificate['PROGRAM']; ?>" type="text" name="program" placeholder="Program" required/>
-    
-    <label>Country : </label>
-    <input value="<?php echo $certificate['COUNTRY']; ?>" type="text" name="country" placeholder="Country" required/>
-    
-    <label>PDF : </label>
-    <input style="padding: 5px;" type="file" name="pdf" placeholder="PDF of the certificate" />
+<form method="post" class="nhr-add-new-timer-form">
 
-    <label>Issue Date : </label>
-    <div class="inline-date-inputs">
-        <input value="<?php echo $issYear; ?>" placeholder="Year" type="number" name="issue_year" minlength="4" maxlength="4" required>
-        <input value="<?php echo $issMonth; ?>" placeholder="Month" type="number" name="issue_month" minlength="1" maxlength="2" min="1" max="12" required>
-        <input value="<?php echo $issDay; ?>" placeholder="Day" type="number" name="issue_day" minlength="1" maxlength="1" min="1" max="31" required>
-    </div>
-    
-    <label>Expiry Date : </label>
-    <div class="inline-date-inputs">
-        <input value="<?php echo $expYear; ?>" placeholder="Year" type="number" name="expiry_year" minlength="4" maxlength="4" required>
-        <input value="<?php echo $expMonth; ?>" placeholder="Month" type="number" name="expiry_month" minlength="1" maxlength="2" min="1" max="12" required>
-        <input value="<?php echo $expDay; ?>" placeholder="Day" type="number" name="expiry_day" minlength="1" maxlength="1" min="1" max="31" required>
-    </div>
+    <input type="hidden" name="timer_id" value="<?php echo (int) $_GET["timer_id"] ?>">
 
-    <label>Comment : </label>
-    <textarea name="comment" cols="30" rows="5" placeholder="Write a comment for this certificate holder"><?php echo $certificate['COMMENT']; ?></textarea>
+    <label>Timer name :</label>
+    <input value="<?php echo $timer->timer_name ?>" type="text" name="timer_name" placeholder="Timer name" required />
 
-    <input class="btn btn-primary" type="submit" value="Update" name="update_certificate">
+    <label>Countdown till : </label>
+    <input value="<?php echo $timer->countdown_till ?>" type="date" name="countdown_till" placeholder="Countdown till" required />
+
+    <label>Background type : </label>
+    <select id="bg_type" name="bg_type" required>
+        <option value="">Select type</option>
+        <option <?php echo ($timer->bg_type == "transparent" ? "selected" : "") ?> value="transparent">Transparent</option>
+        <option <?php echo ($timer->bg_type == "image" ? "selected" : "") ?> value="image">Image</option>
+        <option <?php echo ($timer->bg_type == "color" ? "selected" : "") ?> value="color">Color</option>
+    </select>
+
+    <label style="display: <?php echo ($timer->bg_type === 'image' ? 'block' : 'none') ?> ;" id="bg_image_label">Background image : </label>
+    <input value="<?php echo $timer->bg_image ?>" style="display: <?php echo ($timer->bg_type === 'image' ? 'block' : 'none') ?>;" id="bg_image" type="url" name="bg_image" placeholder="Enter image URL" />
+
+    <label style="display: <?php echo ($timer->bg_type === 'color' ? 'block' : 'none') ?>;" id="bg_color_label">Background color : </label>
+    <input value="<?php echo $timer->bg_color ?>" style="display: <?php echo ($timer->bg_type === 'color' ? 'block' : 'none') ?>;" type="color" name="bg_color" id="bg_color">
+
+    <input class="btn btn-primary" type="submit" value="Update" name="update_timer">
 
 </form>
 
+<script>
+    jQuery(document).ready(() => {
 
+        jQuery("#bg_type").change((evt) => {
+            let bg_type = evt.target.value
+            if (bg_type === "image") {
 
+                jQuery("#bg_image_label, #bg_image")
+                    .attr("required", true).css({
+                        display: "block"
+                    })
+
+                jQuery("#bg_color_label, #bg_color")
+                    .removeAttr("required").css({
+                        display: "none"
+                    })
+
+            } else if (bg_type === "color") {
+
+                jQuery("#bg_image_label, #bg_image")
+                    .removeAttr("required").css({
+                        display: "none"
+                    })
+
+                jQuery("#bg_color_label, #bg_color")
+                    .attr("required", true).css({
+                        display: "block"
+                    })
+
+            } else {
+
+                jQuery("#bg_image_label, #bg_image, #bg_color_label, #bg_color")
+                    .removeAttr("required").css({
+                        display: "none"
+                    })
+
+            }
+        })
+
+    })
+</script>

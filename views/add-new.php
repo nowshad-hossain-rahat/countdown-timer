@@ -1,113 +1,129 @@
 <style>
-    <?php require_once plugin_dir_path( dirname( __FILE__ ) ).'css/admin-page.css'; ?>
+    <?php require_once plugin_dir_path(dirname(__FILE__)) . 'css/admin-page.css'; ?>
 </style>
 
 <?php
 
-    use Nowshad\NhrIacaabCertificateValidator\Database;
+use Nhrdev\CountdownTimer\DbHandler;
 
-    // to show a cancellable admin notice
-    function notify(string $msg, string $type, bool $is_dismissible=true){
-        $dismissible = ($is_dismissible==true) ? "is-dismissible":''; 
-        $notice_board = "<div style='margin-left: 2px;margin-right: 10px;' class='notice notice-$type $dismissible'>".
-                            "<p>$msg</p>".
-                        "</div>";
-        echo $notice_board;
-    }
+// to show a cancellable admin notice
+function notify(string $msg, string $type, bool $is_dismissible = true)
+{
+    $dismissible = ($is_dismissible == true) ? "is-dismissible" : '';
+    $notice_board = "<div style='margin-left: 2px;margin-right: 10px;' class='notice notice-$type $dismissible'>" .
+        "<p>$msg</p>" .
+        "</div>";
+    echo $notice_board;
+}
 
 
-    if(isset($_POST['add_new_certificate'])){
+if (isset($_POST['add_new_timer'])) {
 
-        $organization = trim($_POST['organization_name']);
-        $accreditation_number = trim($_POST['accreditation_number']);
-        $program = trim($_POST['program']);
-        $country = trim($_POST['country']);
-        $comment = trim($_POST['comment']);
+    $timer_name = trim($_POST['timer_name']);
+    $countdown_till = trim($_POST['countdown_till']);
+    $bg_type = trim($_POST['bg_type']);
+    $bg_image = trim($_POST['bg_image']);
+    $bg_color = trim($_POST['bg_color']);
 
-        $issueYear = intval(trim($_POST['issue_year']));
-        $issueMonth = intval(trim($_POST['issue_month']));
-        $issueDay = intval(trim($_POST['issue_day']));
+    if (
+        empty($timer_name) ||
+        empty($countdown_till) ||
+        empty($bg_type)
+    ) {
+        notify("Please fill all the fields!", "warning", true);
+    } else {
 
-        $expiryYear = intval(trim($_POST['expiry_year']));
-        $expiryMonth = intval(trim($_POST['expiry_month']));
-        $expiryDay = intval(trim($_POST['expiry_day']));
+        if ($bg_type === "image" && empty($bg_image)) {
+            notify("Background image is required!", "warning");
+        } else if ($bg_type === "color" && empty($bg_color)) {
+            notify("Background color is required!", "warning");
+        } else {
 
-        $issueDate = "$issueYear-$issueMonth-$issueDay";
-        $expiryDate = "$expiryYear-$expiryMonth-$expiryDay";
-        
-        if(
-            empty($organization) || 
-            empty($accreditation_number) || 
-            empty($program) || 
-            empty($country) || 
-            !isset($_FILES['pdf']) || 
-            empty($issueYear) || 
-            empty($issueMonth) || 
-            empty($issueDay) || 
-            empty($expiryYear) || 
-            empty($expiryMonth) || 
-            empty($expiryDay)
-        ){
-            notify("Please fill all the fields!", "warning", true);
-        }else{
+            $response = DbHandler::addNewTimer($timer_name, $countdown_till, $bg_type, $bg_image, $bg_color);
 
-            $response = Database::addNew($organization, $accreditation_number, $program, $country, $_FILES['pdf'], $issueDate, $expiryDate, $comment);
-
-            if($response == 'success'){
-                notify("Certificate added successfully!", "success", true);
-            }else if($response == 'record-exists'){
-                notify("Record already exists!", 'warning', true);
-            }else{
+            if ($response == 'success') {
+                notify("Timer added successfully!", "success", true);
+            } else if ($response == 'exists') {
+                notify("Timer already exists!", 'warning', true);
+            } else {
                 notify("Something went wrong, please try again!", "warning", true);
             }
-
         }
-
     }
+}
 
 
 ?>
 
-<h1>Add New Certificate</h1>
+<h1>Add New Timer</h1>
 <hr>
 
-<form method="post" enctype="multipart/form-data">
-    
-    <label>Organization Name :</label>
-    <input value="" type="text" name="organization_name" placeholder="Organization name" required/>
-    
-    <label>Accreditation Number : </label>
-    <input value="" type="text" name="accreditation_number" placeholder="Accreditation Number" required/>
-    
-    <label>Program : </label>
-    <input value="" type="text" name="program" placeholder="Program" required/>
-    
-    <label>Country : </label>
-    <input value="" type="text" name="country" placeholder="Country" required/>
-    
-    <label>PDF : </label>
-    <input style="padding: 5px;" type="file" name="pdf" placeholder="PDF of the certificate" required/>
+<form method="post" class="nhr-add-new-timer-form">
 
-    <label>Issue Date : </label>
-    <div class="inline-date-inputs">
-        <input placeholder="Year" type="number" name="issue_year" minlength="4" maxlength="4" required>
-        <input placeholder="Month" type="number" name="issue_month" minlength="1" maxlength="2" min="1" max="12" required>
-        <input placeholder="Day" type="number" name="issue_day" minlength="1" maxlength="2" min="1" max="31" required>
-    </div>
-    
-    <label>Expiry Date : </label>
-    <div class="inline-date-inputs">
-        <input placeholder="Year" type="number" name="expiry_year" minlength="4" maxlength="4" required>
-        <input placeholder="Month" type="number" name="expiry_month" minlength="1" maxlength="2" min="1" max="12" required>
-        <input placeholder="Day" type="number" name="expiry_day" minlength="1" maxlength="2" min="1" max="31" required>
-    </div>
+    <label>Timer name :</label>
+    <input value="" type="text" name="timer_name" placeholder="Timer name" required />
 
-    <label>Comment : </label>
-    <textarea name="comment" cols="30" rows="5" placeholder="Write a comment for this certificate organization"></textarea>
+    <label>Countdown till : </label>
+    <input type="date" name="countdown_till" placeholder="Countdown till" required />
 
-    <input class="btn btn-primary" type="submit" value="Add" name="add_new_certificate">
+    <label>Background type : </label>
+    <select id="bg_type" name="bg_type" required>
+        <option value="">Select type</option>
+        <option value="transparent">Transparent</option>
+        <option value="image">Image</option>
+        <option value="color">Color</option>
+    </select>
+
+    <label style="display: none;" id="bg_image_label">Background image : </label>
+    <input style="display: none;" id="bg_image" type="url" name="bg_image" placeholder="Enter image URL" />
+
+    <label style="display: none;" id="bg_color_label">Background color : </label>
+    <input style="display: none;" type="color" name="bg_color" id="bg_color">
+
+    <input class="btn btn-primary" type="submit" value="Add Timer" name="add_new_timer">
 
 </form>
 
+<script>
+    jQuery(document).ready(() => {
 
+        jQuery("#bg_type").val("")
 
+        jQuery("#bg_type").change((evt) => {
+            let bg_type = evt.target.value
+            if (bg_type === "image") {
+
+                jQuery("#bg_image_label, #bg_image")
+                    .attr("required", true).css({
+                        display: "block"
+                    })
+
+                jQuery("#bg_color_label, #bg_color")
+                    .removeAttr("required").css({
+                        display: "none"
+                    })
+
+            } else if (bg_type === "color") {
+
+                jQuery("#bg_image_label, #bg_image")
+                    .removeAttr("required").css({
+                        display: "none"
+                    })
+
+                jQuery("#bg_color_label, #bg_color")
+                    .attr("required", true).css({
+                        display: "block"
+                    })
+
+            } else {
+
+                jQuery("#bg_image_label, #bg_image, #bg_color_label, #bg_color")
+                    .removeAttr("required").css({
+                        display: "none"
+                    })
+
+            }
+        })
+
+    })
+</script>

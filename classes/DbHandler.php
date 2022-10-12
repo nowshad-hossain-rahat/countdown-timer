@@ -37,15 +37,15 @@ class DbHandler
   }
 
 
-  public static function getOneTimerByID(int $timer_id)
+  public static function getOneTimerByID(int $timer_id, string $return_type = OBJECT)
   {
-    return $GLOBALS['wpdb']->get_row("SELECT * FROM " . self::$tableName . " WHERE timer_id='$timer_id'", ARRAY_A);
+    return $GLOBALS['wpdb']->get_row("SELECT * FROM " . self::$tableName . " WHERE timer_id='$timer_id'", $return_type);
   }
 
 
-  public static function getOneTimerByName(int $timer_name)
+  public static function getOneTimerByName(string $timer_name, string $return_type = OBJECT)
   {
-    return $GLOBALS['wpdb']->get_row("SELECT * FROM " . self::$tableName . " WHERE BINARY timer_name='$timer_name'", ARRAY_A);
+    return $GLOBALS['wpdb']->get_row("SELECT * FROM " . self::$tableName . " WHERE BINARY timer_name='$timer_name'", $return_type);
   }
 
 
@@ -85,7 +85,7 @@ class DbHandler
   public static function updateTimer(int $timer_id, string $timer_name, string $countdown_till, string $bg_type, string $bg_image, string $bg_color)
   {
 
-    $exists = self::getOneTimerByID($timer_name);
+    $exists = self::getOneTimerByName($timer_name);
 
     if ($exists && ($exists['timer_id'] != $timer_id)) {
       return 'exists';
@@ -135,6 +135,108 @@ class DbHandler
       ]
     );
     return $deleted;
+  }
+
+
+  public static function calculateDateTimeDifference(string $starting_date, string $ending_date)
+  {
+    $_countdown_till = strtotime($ending_date);
+    $_datetime_now = strtotime($starting_date);
+    $_datetime_left = ($_countdown_till - $_datetime_now);
+    $_initial_datetime_left = $_datetime_left;
+
+    $_years_left = 0;
+    $_months_left = 0;
+    $_weeks_left = 0;
+    $_days_left = 0;
+    $_hours_left = 0;
+    $_minutes_left = 0;
+    $_seconds_left = 0;
+
+    # calculating years left
+    if (($_datetime_left / (60 * 60 * 24 * 30 * 12)) >= 1) {
+      $_years_left = floor($_datetime_left / (60 * 60 * 24 * 30 * 12));
+      $_datetime_left = $_datetime_left - ($_years_left * (60 * 60 * 24 * 30 * 12));
+    }
+
+    # calculating months left
+    if (($_datetime_left / (60 * 60 * 24 * 30)) >= 1) {
+      $_months_left = floor($_datetime_left / (60 * 60 * 24 * 30));
+      $_datetime_left = $_datetime_left - ($_months_left * (60 * 60 * 24 * 30));
+    }
+
+    # calculating weeks left
+    if (($_datetime_left / (60 * 60 * 24 * 7)) >= 1) {
+      $_weeks_left = floor($_datetime_left / (60 * 60 * 24 * 7));
+      $_datetime_left = $_datetime_left - ($_weeks_left * (60 * 60 * 24 * 7));
+    }
+
+    # calculating days left
+    if (($_datetime_left / (60 * 60 * 24)) >= 1) {
+      $_days_left = floor($_datetime_left / (60 * 60 * 24));
+      $_datetime_left = $_datetime_left - ($_days_left * (60 * 60 * 24));
+    }
+
+    # calculating hours left
+    if (($_datetime_left / (60 * 60)) >= 1) {
+      $_hours_left = floor($_datetime_left / (60 * 60));
+      $_datetime_left = $_datetime_left - ($_hours_left * (60 * 60));
+    }
+
+    # calculating minutes left
+    if (($_datetime_left / 60) >= 1) {
+      $_minutes_left = floor($_datetime_left / 60);
+      $_datetime_left = $_datetime_left - ($_minutes_left * 60);
+    }
+
+    # calculating seconds left
+    if ($_datetime_left >= 1) {
+      $_seconds_left = floor($_datetime_left);
+    }
+
+    # calculating general weeks and days left
+    $general_weeks_and_days_left = [
+      'weeks_left' => 0,
+      'days_left' => 0
+    ];
+
+    if (($_initial_datetime_left / (60 * 60 * 24 * 7)) >= 1) {
+      $general_weeks_and_days_left['weeks_left'] = floor($_initial_datetime_left / (60 * 60 * 24 * 7));
+      $dt_left = ($_initial_datetime_left - ($general_weeks_and_days_left['weeks_left'] * (60 * 60 * 24 * 7)));
+      $general_weeks_and_days_left['days_left'] = ceil($dt_left / (60 * 60 * 24));
+    }
+
+    # calculating general years weeks and days left
+    $general_ymd_left = [
+      'years_left' => $_years_left,
+      'months_left' => 0,
+      'days_left' => 0
+    ];
+
+    $_dt_left = ($_initial_datetime_left - ($general_ymd_left['years_left'] * (60 * 60 * 24 * 30 * 12)));
+    $general_ymd_left['months_left'] = floor($_dt_left / (60 * 60 * 24 * 30));
+    $_dt_left = ($_dt_left - ($general_ymd_left['months_left'] * (60 * 60 * 24 * 30)));
+    $general_ymd_left['days_left'] = floor($_dt_left / (60 * 60 * 24));
+
+    return [
+      'countdown_timer' => [
+        'years_left' => $_years_left,
+        'months_left' => $_months_left,
+        'weeks_left' => $_weeks_left,
+        'days_left' => $_days_left,
+        'hours_left' => $_hours_left,
+        'minutes_left' => $_minutes_left,
+        'seconds_left' => $_seconds_left
+      ],
+      'general' => [
+        'years_left' => $_years_left,
+        'months_left' => $_months_left,
+        'days_left' => ceil($_initial_datetime_left / (60 * 60 * 24)),
+        'wd_left' => $general_weeks_and_days_left,
+        'ymd_left' => $general_ymd_left
+      ]
+    ];
+
   }
 
 
