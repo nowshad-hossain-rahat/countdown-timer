@@ -45,12 +45,12 @@ final class CountdownTimer
 
     add_action('init', function () {
       $this->createShortcodes([
-        'nhr-countdown-timer' => 'showCountdownTimer'
+        'nhr-countdown-timer' => 'showCountdownTimer',
+        'nhr-stopwatch' => 'showStopwatch'
       ]);
     });
 
     $this->checkAndUpdateTimerStatuses();
-
   }
 
 
@@ -66,8 +66,7 @@ final class CountdownTimer
   function checkAndUpdateTimerStatuses()
   {
     $timers = DbHandler::getAllTimers();
-    foreach($timers as $timer)
-    {
+    foreach ($timers as $timer) {
       $diff = strtotime($timer->countdown_till) - strtotime(date("Y-m-d H:i:s"));
       if ($diff <= 0) {
         DbHandler::updateTimerStatus($timer->timer_id, "stopped");
@@ -75,31 +74,48 @@ final class CountdownTimer
     }
   }
 
-  function showCountdownTimer( $attr )
+  function showStopwatch()
   {
-    if (isset($attr["name"]))
-    {
+    ob_start();
+
+    echo "<style>";
+    echo "@font-face {
+                    font-family: 'Digital';
+                    src: url('" . plugin_dir_url(__FILE__) . "fonts/digital-7.ttf');
+                  }";
+    require_once plugin_dir_path(__FILE__) . "css/stopwatch.css";
+    echo "</style>";
+    echo "<script src='" . plugin_dir_url(__FILE__) . "scripts/nhr-stopwatch.js'></script>";
+    require_once plugin_dir_path(__FILE__) . "views/stopwatch.php";
+
+    $html = ob_get_clean();
+
+    return $html;
+  }
+
+  function showCountdownTimer($attr)
+  {
+    if (isset($attr["name"])) {
       $timer_name = trim($attr["name"]);
 
       ob_start();
 
-        $timer = DbHandler::getOneTimerByName($timer_name);
+      $timer = DbHandler::getOneTimerByName($timer_name);
 
-        echo "<style>";
-        echo "@font-face {
+      echo "<style>";
+      echo "@font-face {
                     font-family: 'Digital';
                     src: url('" . plugin_dir_url(__FILE__) . "fonts/digital-7.ttf');
                   }";
-          require_once plugin_dir_path(__FILE__) . "css/countdown-timer.css";
-        echo "</style>";
+      require_once plugin_dir_path(__FILE__) . "css/countdown-timer.css";
+      echo "</style>";
 
-        if ($timer->status == "counting")
-        {
-          echo "<script src='" . plugin_dir_url(__FILE__) . "scripts/functions.js'></script>";
-          require_once plugin_dir_path(__FILE__) . "views/show-countdown-timer.php";
-        } else {
-          echo "<h1 class='nhr-countdown-finished'>Countdown Finished!</h1>";
-        }
+      if ($timer->status == "counting") {
+        echo "<script src='" . plugin_dir_url(__FILE__) . "scripts/functions.js'></script>";
+        require_once plugin_dir_path(__FILE__) . "views/show-countdown-timer.php";
+      } else {
+        echo "<h1 class='nhr-countdown-finished'>Countdown Finished!</h1>";
+      }
 
       $html = ob_get_clean();
 
@@ -111,12 +127,10 @@ final class CountdownTimer
 
   function createShortcodes(array $shortcodesAndCallbacks)
   {
-    foreach($shortcodesAndCallbacks as $shortcode => $callback)
-    {
+    foreach ($shortcodesAndCallbacks as $shortcode => $callback) {
       add_shortcode($shortcode, [$this, $callback]);
     }
   }
-
 }
 
 if (class_exists('CountdownTimer')) {

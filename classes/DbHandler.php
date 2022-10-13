@@ -87,7 +87,7 @@ class DbHandler
 
     $exists = self::getOneTimerByName($timer_name);
 
-    if ($exists && ($exists['timer_id'] != $timer_id)) {
+    if ($exists && ($exists->timer_id != $timer_id)) {
       return 'exists';
     } else {
 
