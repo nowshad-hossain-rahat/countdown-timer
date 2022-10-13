@@ -49,9 +49,9 @@ class DbHandler
   }
 
 
-  public static function getAllTimers()
+  public static function getAllTimers(string $return_type = OBJECT)
   {
-    return $GLOBALS['wpdb']->get_results("SELECT * FROM " . self::$tableName . " ORDER BY timer_id DESC", ARRAY_A);
+    return $GLOBALS['wpdb']->get_results("SELECT * FROM " . self::$tableName . " ORDER BY timer_id DESC", $return_type);
   }
 
 
@@ -195,15 +195,20 @@ class DbHandler
     }
 
     # calculating general weeks and days left
-    $general_weeks_and_days_left = [
+    $general_wd_left = [
       'weeks_left' => 0,
       'days_left' => 0
     ];
 
-    if (($_initial_datetime_left / (60 * 60 * 24 * 7)) >= 1) {
-      $general_weeks_and_days_left['weeks_left'] = floor($_initial_datetime_left / (60 * 60 * 24 * 7));
-      $dt_left = ($_initial_datetime_left - ($general_weeks_and_days_left['weeks_left'] * (60 * 60 * 24 * 7)));
-      $general_weeks_and_days_left['days_left'] = ceil($dt_left / (60 * 60 * 24));
+    if (($_initial_datetime_left / (60 * 60 * 24)) >= 1) {
+      $total_days_left = ceil($_initial_datetime_left / (60 * 60 * 24));
+      $general_wd_left['weeks_left'] = floor($total_days_left / 7);
+      $general_wd_left['days_left'] = (int) ($total_days_left % 7);
+      if ($general_wd_left['days_left'] >= 7) {
+        $_weeks_inside_days = floor($general_wd_left['days_left'] / 7);
+        $general_wd_left['weeks_left'] += $_weeks_inside_days;
+        $general_wd_left['days_left'] = (int) ($general_wd_left['days_left'] % 7);
+      }
     }
 
     # calculating general years weeks and days left
@@ -217,6 +222,22 @@ class DbHandler
     $general_ymd_left['months_left'] = floor($_dt_left / (60 * 60 * 24 * 30));
     $_dt_left = ($_dt_left - ($general_ymd_left['months_left'] * (60 * 60 * 24 * 30)));
     $general_ymd_left['days_left'] = floor($_dt_left / (60 * 60 * 24));
+
+    # calculating general days, hours, minutes and seconds
+    $general_dhms_left = [
+      'days_left' => 0,
+      'hours_left' => 0,
+      'minutes_left' => 0,
+      'seconds_left' => 0
+    ];
+
+    $general_dhms_left['days_left'] = floor($_initial_datetime_left / (60 * 60 * 24));
+    $_dt_left = ($_initial_datetime_left - ($general_dhms_left['days_left'] * (60 * 60 * 24)));
+    $general_dhms_left['hours_left'] = floor($_dt_left / 3600);
+    $_dt_left = ($_dt_left - ($general_dhms_left['hours_left'] * 3600));
+    $general_dhms_left['minutes_left'] = floor($_dt_left / 60);
+    $_dt_left = ($_dt_left - ($general_dhms_left['minutes_left'] * 60));
+    $general_dhms_left['seconds_left'] = $_dt_left;
 
     return [
       'countdown_timer' => [
@@ -232,8 +253,9 @@ class DbHandler
         'years_left' => $_years_left,
         'months_left' => $_months_left,
         'days_left' => ceil($_initial_datetime_left / (60 * 60 * 24)),
-        'wd_left' => $general_weeks_and_days_left,
-        'ymd_left' => $general_ymd_left
+        'wd_left' => $general_wd_left,
+        'ymd_left' => $general_ymd_left,
+        'dhms_left' => $general_dhms_left
       ]
     ];
 

@@ -48,6 +48,9 @@ final class CountdownTimer
         'nhr-countdown-timer' => 'showCountdownTimer'
       ]);
     });
+
+    $this->checkAndUpdateTimerStatuses();
+
   }
 
 
@@ -59,6 +62,19 @@ final class CountdownTimer
     wp_enqueue_style('fontello-embedded', plugin_dir_url(__FILE__) . 'css/fontello-embedded.css');
   }
 
+  # to check and update the statuses of all the timers
+  function checkAndUpdateTimerStatuses()
+  {
+    $timers = DbHandler::getAllTimers();
+    foreach($timers as $timer)
+    {
+      $diff = strtotime($timer->countdown_till) - strtotime(date("Y-m-d H:i:s"));
+      if ($diff <= 0) {
+        DbHandler::updateTimerStatus($timer->timer_id, "stopped");
+      }
+    }
+  }
+
   function showCountdownTimer( $attr )
   {
     if (isset($attr["name"]))
@@ -66,11 +82,25 @@ final class CountdownTimer
       $timer_name = trim($attr["name"]);
 
       ob_start();
+
         $timer = DbHandler::getOneTimerByName($timer_name);
+
         echo "<style>";
+        echo "@font-face {
+                    font-family: 'Digital';
+                    src: url('" . plugin_dir_url(__FILE__) . "fonts/digital-7.ttf');
+                  }";
           require_once plugin_dir_path(__FILE__) . "css/countdown-timer.css";
         echo "</style>";
-        require_once plugin_dir_path(__FILE__) . "views/show-countdown-timer.php";
+
+        if ($timer->status == "counting")
+        {
+          echo "<script src='" . plugin_dir_url(__FILE__) . "scripts/functions.js'></script>";
+          require_once plugin_dir_path(__FILE__) . "views/show-countdown-timer.php";
+        } else {
+          echo "<h1 class='nhr-countdown-finished'>Countdown Finished!</h1>";
+        }
+
       $html = ob_get_clean();
 
       return $html;

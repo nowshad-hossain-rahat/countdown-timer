@@ -16,7 +16,7 @@ class CountdownTimers extends WP_List_Table
   public function prepare_items()
   {
 
-    $certificates = DbHandler::getAllTimers();
+    $certificates = DbHandler::getAllTimers(ARRAY_A);
 
     $per_page = 20;
     $current_page = $this->get_pagenum();
