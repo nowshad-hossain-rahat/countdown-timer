@@ -79,6 +79,7 @@ class NhrStopwatch {
     this.seconds = 0
     this.milliseconds = 0
     this.stop()
+    this.putValuesToHtml()
   }
 
 }

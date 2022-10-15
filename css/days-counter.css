@@ -1,0 +1,114 @@
+.nhr-days-counter-container {
+  width: 80%;
+  margin: 10px 10%;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.nhr-days-counter-container .nhr-days-counter {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 15px 20px;
+  box-sizing: border-box;
+}
+
+.nhr-days-counter-container .nhr-days-counter .nhr-dc-submit-btn {
+  background-color: dodgerblue;
+  color: white;
+  font-weight: bold;
+  border: none;
+  outline: none;
+  padding: 8px 25px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.nhr-days-counter-container .nhr-days-counter .nhr-dc-form-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 15px 0;
+  padding: 0;
+}
+
+.nhr-days-counter-container .nhr-days-counter .nhr-dc-form-header .nhr-dc-date-peeker {
+  width: 250px;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.nhr-days-counter-container .nhr-days-counter .nhr-dc-form-header .nhr-dc-date-peeker.left {
+  margin-right: 15px;
+}
+
+.nhr-days-counter-container .nhr-days-counter .nhr-dc-form-header .nhr-dc-date-peeker.right {
+  margin-left: 15px;
+}
+
+.nhr-days-counter-container .nhr-days-counter .nhr-dc-form-header .nhr-dc-date-peeker input {
+  width: 100%;
+  padding: 5px 12px !important;
+  height: 40px !important;
+  color: #222;
+  outline: none;
+  border: 1px solid #999;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-size: 15px;
+}
+
+.nhr-days-counter-container .nhr-days-counter .nhr-dc-form-header .nhr-dc-date-peeker input:read-only {
+  background: #ddd;
+  cursor: not-allowed;
+}
+
+.nhr-days-counter-container .nhr-days-counter-results {
+  width: 100%;
+  padding: 15px;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.nhr-days-counter-container .nhr-days-counter-results .nhr-dc-result {
+  margin: 0;
+  padding: 10px 15px;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd;
+  width: 100%;
+  text-align: center;
+  font-family: sans-serif;
+  color: #333;
+}
+
+.nhr-days-counter-container .nhr-days-counter-results .nhr-dc-result:last-child {
+  border: none;
+}
+
+@media screen and (max-width: 400px) {
+
+  .nhr-days-counter-container .nhr-days-counter .nhr-dc-form-header {
+    flex-direction: column;
+  }
+
+  .nhr-days-counter-container .nhr-days-counter .nhr-dc-form-header .nhr-dc-date-peeker {
+    width: 100%;
+    margin: 0 !important;
+  }
+
+  .nhr-days-counter-container .nhr-days-counter .nhr-dc-form-header .nhr-dc-date-peeker.left {
+    margin-bottom: 10px !important;
+  }
+
+  .nhr-days-counter-container .nhr-days-counter-results .nhr-dc-result {
+    font-size: 15px;
+  }
+
+}

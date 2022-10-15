@@ -28,7 +28,7 @@ $_milliconds_left = $general_dhms_left['milliconds_left'];
                                                       }
                                                       ?>;">
     <p class="days-left-text">
-      <span style="font-size: 18px;"> <?php echo $general_dhms_left['days_left']; ?> </span>
+      <span id="days-value-span" style="font-size: 18px;"> <?php echo $general_dhms_left['days_left']; ?> </span>
       dias para o
       <span style='font-size: 18px;'> <?php echo $timer->timer_name; ?> </span>
       chegar!
@@ -57,7 +57,7 @@ $_milliconds_left = $general_dhms_left['milliconds_left'];
 </div>
 
 <script>
-  const CountdownTimer = JSON.parse(`<?php echo json_encode($timer); ?>`)
+  let CountdownTimer = JSON.parse(`<?php echo json_encode($timer); ?>`)
 
   window.addEventListener("load", () => {
     const NhrCountdownInterval = setInterval(() => {
@@ -65,20 +65,33 @@ $_milliconds_left = $general_dhms_left['milliconds_left'];
       let units = countdownTimer.querySelectorAll(".countdown-timer-units li")
 
       let diff = calculateDateTimeDifference(new Date(), CountdownTimer.countdown_till)
-      let dhmsLeft = diff.general.dhms_left
 
-      units.forEach((unit) => {
-        const name = unit.dataset.unit
-        if (name == "days") {
-          unit.firstChild.nodeValue = dhmsLeft.days_left < 10 ? "0" + dhmsLeft.days_left : dhmsLeft.days_left
-        } else if (name == "hours") {
-          unit.firstChild.nodeValue = dhmsLeft.hours_left < 10 ? "0" + dhmsLeft.hours_left : dhmsLeft.hours_left
-        } else if (name == "minutes") {
-          unit.firstChild.nodeValue = dhmsLeft.minutes_left < 10 ? "0" + dhmsLeft.minutes_left : dhmsLeft.minutes_left
-        } else if (name == "seconds") {
-          unit.firstChild.nodeValue = dhmsLeft.seconds_left < 10 ? "0" + dhmsLeft.seconds_left : dhmsLeft.seconds_left
+      if (diff) {
+        let dhmsLeft = diff.general.dhms_left
+
+        countdownTimer.querySelector(".days-left-text span#days-value-span").innerText = dhmsLeft.days_left
+
+        units.forEach((unit) => {
+          const name = unit.dataset.unit
+          if (name == "days") {
+            unit.firstChild.nodeValue = dhmsLeft.days_left < 10 ? "0" + dhmsLeft.days_left : dhmsLeft.days_left
+          } else if (name == "hours") {
+            unit.firstChild.nodeValue = dhmsLeft.hours_left < 10 ? "0" + dhmsLeft.hours_left : dhmsLeft.hours_left
+          } else if (name == "minutes") {
+            unit.firstChild.nodeValue = dhmsLeft.minutes_left < 10 ? "0" + dhmsLeft.minutes_left : dhmsLeft.minutes_left
+          } else if (name == "seconds") {
+            unit.firstChild.nodeValue = dhmsLeft.seconds_left < 10 ? "0" + dhmsLeft.seconds_left : dhmsLeft.seconds_left
+          }
+        })
+      } else {
+        let countdownTimerContainer = document.querySelector(".nhr-countdown-timer-container")
+        let timer = countdownTimerContainer.querySelector(".nhr-countdown-timer")
+        if (timer) {
+          timer.style.display = "none"
         }
-      })
+        countdownTimerContainer.insertAdjacentHTML("beforeend", "<h1 class='nhr-countdown-finished'>Countdown Finished!</h1>")
+        clearInterval(NhrCountdownInterval)
+      }
 
     }, 1000)
   })

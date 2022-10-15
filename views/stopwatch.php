@@ -17,7 +17,7 @@
 </div>
 
 <script>
-  const nhrStopwatch = new NhrStopwatch({
+  const __nhrStopwatch__ = new NhrStopwatch({
     hours: ".nhr-stopwatch-container .nhr-stopwatch .nhr-stopwatch-units .single-unit.hours",
     minutes: ".nhr-stopwatch-container .nhr-stopwatch .nhr-stopwatch-units .single-unit.minutes",
     seconds: ".nhr-stopwatch-container .nhr-stopwatch .nhr-stopwatch-units .single-unit.seconds",
@@ -27,18 +27,23 @@
   document
     .querySelector(".nhr-stopwatch-container .nhr-stopwatch-action-buttons #nhr-start-stop-stopwatch-btn")
     .addEventListener("click", (evt) => {
-      if (nhrStopwatch.isStopped()) {
-        nhrStopwatch.start()
-        evt.target.innerText = "Começar"
-      } else {
-        nhrStopwatch.stop()
+      if (__nhrStopwatch__.isStopped()) {
+        __nhrStopwatch__.start()
         evt.target.innerText = "Pare"
+        evt.target.style.background = "firebrick"
+      } else {
+        __nhrStopwatch__.stop()
+        evt.target.innerText = "Começar"
+        evt.target.style.background = "dodgerBlue"
       }
     })
 
   document
     .querySelector(".nhr-stopwatch-container .nhr-stopwatch-action-buttons #nhr-reset-stopwatch-btn")
     .addEventListener("click", (evt) => {
-      nhrStopwatch.reset()
+      const startStopBtn = document.querySelector(".nhr-stopwatch-container .nhr-stopwatch-action-buttons #nhr-start-stop-stopwatch-btn")
+      __nhrStopwatch__.reset()
+      startStopBtn.innerText = (__nhrStopwatch__.isStopped()) ? "Começar" : "Pare"
+      startStopBtn.style.background = (__nhrStopwatch__.isStopped()) ? "dodgerBlue" : "firebrick"
     })
 </script>

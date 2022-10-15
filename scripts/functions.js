@@ -2,6 +2,11 @@ function calculateDateTimeDifference(starting_date, ending_date) {
   countdown_till = Date.parse(ending_date) / 1000;
   datetime_now = Date.parse(starting_date) / 1000;
   datetime_left = (countdown_till - datetime_now);
+
+  if (datetime_left <= 0) {
+    return false
+  }
+
   initial_datetime_left = datetime_left;
 
   years_left = 0;

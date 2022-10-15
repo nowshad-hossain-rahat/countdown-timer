@@ -46,7 +46,9 @@ final class CountdownTimer
     add_action('init', function () {
       $this->createShortcodes([
         'nhr-countdown-timer' => 'showCountdownTimer',
-        'nhr-stopwatch' => 'showStopwatch'
+        'nhr-stopwatch' => 'showStopwatch',
+        'nhr-custom-countdown-timer' => 'showCustomCountdownTimer',
+        'nhr-days-counter' => 'showDaysCounter'
       ]);
     });
 
@@ -83,7 +85,7 @@ final class CountdownTimer
                     font-family: 'Digital';
                     src: url('" . plugin_dir_url(__FILE__) . "fonts/digital-7.ttf');
                   }";
-    require_once plugin_dir_path(__FILE__) . "css/stopwatch.css";
+    require_once plugin_dir_path(__FILE__) . "css/stopwatch.min.css";
     echo "</style>";
     echo "<script src='" . plugin_dir_url(__FILE__) . "scripts/nhr-stopwatch.js'></script>";
     require_once plugin_dir_path(__FILE__) . "views/stopwatch.php";
@@ -111,11 +113,13 @@ final class CountdownTimer
       echo "</style>";
 
       if ($timer->status == "counting") {
-        echo "<script src='" . plugin_dir_url(__FILE__) . "scripts/functions.js'></script>";
+        echo "<script src='" . plugin_dir_url(__FILE__) . "scripts/functions.min.js'></script>";
         require_once plugin_dir_path(__FILE__) . "views/show-countdown-timer.php";
-      } else {
-        echo "<h1 class='nhr-countdown-finished'>Countdown Finished!</h1>";
-      }
+      } else { ?>
+        <div class="nhr-countdown-timer-container">
+          <h1 class='nhr-countdown-finished'>Countdown Finished!</h1>
+        </div>
+<?php }
 
       $html = ob_get_clean();
 
@@ -124,6 +128,49 @@ final class CountdownTimer
       return "";
     }
   }
+
+  function showCustomCountdownTimer()
+  {
+    ob_start();
+
+    echo "<style>";
+    echo "@font-face {
+                    font-family: 'Digital';
+                    src: url('" . plugin_dir_url(__FILE__) . "fonts/digital-7.ttf');
+                  }";
+    require_once plugin_dir_path(__FILE__) . "css/countdown-timer.css";
+    echo "</style>";
+
+    echo "<script src='" . plugin_dir_url(__FILE__) . "scripts/functions.min.js'></script>";
+    require_once plugin_dir_path(__FILE__) . "views/show-custom-countdown-timer.php";
+
+    $html = ob_get_clean();
+
+    return $html;
+  }
+
+  function showDaysCounter($attr)
+  {
+    $event_name = isset($attr['name']) ? trim($attr['name']) : 'End date';
+
+    ob_start();
+
+    echo "<style>";
+    echo "@font-face {
+                    font-family: 'Digital';
+                    src: url('" . plugin_dir_url(__FILE__) . "fonts/digital-7.ttf');
+                  }";
+    require_once plugin_dir_path(__FILE__) . "css/days-counter.css";
+    echo "</style>";
+
+    echo "<script src='" . plugin_dir_url(__FILE__) . "scripts/functions.min.js'></script>";
+    require_once plugin_dir_path(__FILE__) . "views/days-counter.php";
+
+    $html = ob_get_clean();
+
+    return $html;
+  }
+
 
   function createShortcodes(array $shortcodesAndCallbacks)
   {
