@@ -49,7 +49,7 @@ $_milliconds_left = $general_dhms_left['milliconds_left'];
       </li>
       <li data-unit="seconds">
         <?php echo ($_seconds_left < 10 ? "0" . $_seconds_left : $_seconds_left) ?>
-        <span>Segundas</span>
+        <span>Segundos</span>
       </li>
     </ul>
 

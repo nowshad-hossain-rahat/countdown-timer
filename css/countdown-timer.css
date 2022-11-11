@@ -93,12 +93,14 @@
 .nhr-countdown-timer-creator-inputs .nhr-ctci input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
+  appearance: none;
   margin: 0;
 }
 
 /* Firefox */
 .nhr-countdown-timer-creator-inputs .nhr-ctci input[type=number] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .nhr-countdown-timer-creator-inputs .nhr-ctci input {
@@ -181,6 +183,9 @@ input::-webkit-inner-spin-button {
   text-align: center;
   width: 100%;
   font-family: sans-serif;
+  overflow: hidden;
+  max-width: 7.2ch;
+  white-space: nowrap;
 }
 
 .nhr-countdown-finished {
@@ -217,16 +222,19 @@ input::-webkit-inner-spin-button {
     font-size: 17px !important;
   }
 
+  .nhr-countdown-timer-container .nhr-countdown-timer .countdown-timer-units {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
   .nhr-countdown-timer-container .nhr-countdown-timer .countdown-timer-units li {
-    font-size: 22px;
-    width: 50px;
-    padding: 5px 10px;
+    margin-bottom: 5px;
+    width: 95px;
   }
 
   .nhr-countdown-timer-container .nhr-countdown-timer .countdown-timer-units li span {
-    font-size: 13px;
-    width: 3ch;
-    overflow: hidden;
+    max-width: unset;
   }
 
 }

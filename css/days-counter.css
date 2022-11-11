@@ -1,7 +1,7 @@
 .nhr-days-counter-container {
   width: 80%;
   margin: 10px 10%;
-  background-color: white;
+  background-color: #eee;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
   padding: 0;
@@ -46,6 +46,13 @@
 
 .nhr-days-counter-container .nhr-days-counter .nhr-dc-form-header .nhr-dc-date-peeker.left {
   margin-right: 15px;
+}
+
+.nhr-days-counter-container .nhr-days-counter .nhr-dc-form-header .nhr-dc-date-peeker.left,
+.nhr-days-counter-container .nhr-days-counter .nhr-dc-form-header .nhr-dc-date-peeker.right {
+  font-weight: bold;
+  color: black;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
 }
 
 .nhr-days-counter-container .nhr-days-counter .nhr-dc-form-header .nhr-dc-date-peeker.right {

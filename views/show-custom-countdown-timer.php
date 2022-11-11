@@ -61,7 +61,7 @@
       </li>
       <li data-unit="seconds">
         00
-        <span>Segundas</span>
+        <span>Segundos</span>
       </li>
     </ul>
 
